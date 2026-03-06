@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SAGA - Contact</title>
+  <title>SAGA - Schedule an Appointment</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -12,29 +12,80 @@
     <ul>
       <li><a href="index.html">Home</a></li>
       <li><a href="about.html">About</a></li>
-      <li><a href="products.html">Products</a></li>
+      <li><a href="products.html">Solutions</a></li>
       <li><a href="industries.html">Industries</a></li>
-      <li><a href="contact.html" class="active">Contact</a></li>
+      <li><a href="contact.html" class="active">Schedule an Appointment</a></li>
     </ul>
   </nav>
 
   <main>
+    <!-- Hero -->
     <section class="hero">
       <div class="hero__inner">
-        <h1>Let's build something <span class="accent">together</span></h1>
-        <p>Whether you have a project in mind or just want to explore what's possible — we'd love to hear from you.</p>
+        <h1>Let's discuss your <span class="accent">sealing challenge</span></h1>
+        <p>Tell us about your application and we'll connect you with the right solution and engineering support.</p>
       </div>
     </section>
 
+    <!-- Appointment Form -->
     <section class="section section--alt">
       <div class="section__inner">
-        <span class="section__label">Reach Out</span>
-        <h2 class="section__title">How to get in touch</h2>
-        <p class="section__subtitle">Pick the channel that works best for you.</p>
+        <span class="section__label">Schedule an Appointment</span>
+        <h2 class="section__title">Tell us about your project</h2>
+        <p class="section__subtitle">Fill out the form below and a member of our team will follow up within one business day.</p>
+        <form class="form" action="#" method="post">
+          <div class="form__row">
+            <div class="form__group">
+              <label class="form__label" for="name">Full Name</label>
+              <input class="form__input" type="text" id="name" name="name" placeholder="Jane Smith" required>
+            </div>
+            <div class="form__group">
+              <label class="form__label" for="company">Company</label>
+              <input class="form__input" type="text" id="company" name="company" placeholder="Acme Engineering" required>
+            </div>
+          </div>
+          <div class="form__row">
+            <div class="form__group">
+              <label class="form__label" for="email">Email</label>
+              <input class="form__input" type="email" id="email" name="email" placeholder="jane@acme.com" required>
+            </div>
+            <div class="form__group">
+              <label class="form__label" for="phone">Phone</label>
+              <input class="form__input" type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000">
+            </div>
+          </div>
+          <div class="form__group">
+            <label class="form__label" for="industry">Industry</label>
+            <select class="form__select" id="industry" name="industry" required>
+              <option value="" disabled selected>Select your industry</option>
+              <option value="aerospace">Aerospace &amp; Space</option>
+              <option value="medical">Medical Devices</option>
+              <option value="lab-instruments">Analytical &amp; Clinical Lab Instruments</option>
+              <option value="semiconductor">Semiconductor Processing Equipment</option>
+              <option value="defense">Autonomous Defense Equipment</option>
+              <option value="energy">Energy (Oil, Gas, Solar)</option>
+              <option value="battery">Battery Technology</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form__group">
+            <label class="form__label" for="description">Describe Your Application</label>
+            <textarea class="form__textarea" id="description" name="description" placeholder="Tell us about the sealing challenge — operating environment, media, temperature, pressure, or any specific requirements."></textarea>
+          </div>
+          <button type="submit" class="btn btn--primary">Schedule an Appointment</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Contact Info -->
+    <section class="section">
+      <div class="section__inner">
+        <span class="section__label">Direct Contact</span>
+        <h2 class="section__title">Other ways to reach us</h2>
         <div class="contact-info">
           <div class="contact-info__item">
             <h3>Email</h3>
-            <p>hello@saga.com</p>
+            <p>hello@saga-seals.com</p>
           </div>
           <div class="contact-info__item">
             <h3>Phone</h3>
@@ -42,17 +93,9 @@
           </div>
           <div class="contact-info__item">
             <h3>Location</h3>
-            <p>123 Main Street<br>New York, NY 10001</p>
+            <p>City, State</p>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section class="section cta-banner">
-      <div class="section__inner">
-        <h2 class="section__title">Ready to start?</h2>
-        <p class="section__subtitle" style="margin-left:auto;margin-right:auto;">Send us a message and we'll get back to you within 24 hours.</p>
-        <a href="mailto:hello@saga.com" class="btn btn--primary">Send an Email</a>
       </div>
     </section>
   </main>
@@ -62,7 +105,7 @@
       <span class="footer__logo">SAGA</span>
       <ul class="footer__links">
         <li><a href="about.html">About</a></li>
-        <li><a href="products.html">Products</a></li>
+        <li><a href="products.html">Solutions</a></li>
         <li><a href="industries.html">Industries</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
