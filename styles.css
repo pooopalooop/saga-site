@@ -107,6 +107,7 @@ main { flex: 1; }
 .section__inner {
   max-width: var(--max-w);
   margin: 0 auto;
+  text-align: center;
 }
 
 /* ── Hero ──────────────────────────────────────────── */
@@ -116,7 +117,7 @@ main { flex: 1; }
 }
 
 .hero__inner {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -133,9 +134,9 @@ main { flex: 1; }
 }
 
 .hero p {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: var(--text-muted);
-  max-width: 600px;
+  max-width: 720px;
   margin: 0 auto 2.5rem;
   line-height: 1.7;
 }
@@ -175,6 +176,10 @@ main { flex: 1; }
   background: rgba(200, 162, 255, 0.1);
 }
 
+.section__cta {
+  margin-top: 2.5rem;
+}
+
 /* ── Section Headings ──────────────────────────────── */
 .section__label {
   font-size: 0.8rem;
@@ -186,18 +191,20 @@ main { flex: 1; }
 }
 
 .section__title {
-  font-size: 2.25rem;
+  font-size: 3rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   margin-bottom: 1rem;
 }
 
 .section__subtitle {
   font-size: 1.05rem;
   color: var(--text-muted);
-  max-width: 600px;
+  max-width: 720px;
   line-height: 1.7;
   margin-bottom: 3rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ── Card Grid ─────────────────────────────────────── */
@@ -212,6 +219,7 @@ main { flex: 1; }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 2rem;
+  text-align: left;
   transition: border-color 0.25s, transform 0.2s;
 }
 
@@ -259,6 +267,24 @@ main { flex: 1; }
   margin-bottom: 1.5rem;
 }
 
+/* ── Contact Section (combined CTA + Direct) ─────── */
+.contact-section .section__title {
+  color: var(--accent);
+}
+
+.contact-section .contact-info {
+  margin-top: 3rem;
+  text-align: center;
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.contact-section .contact-info__item h3 {
+  color: var(--accent);
+}
+
 /* ── Contact Info ──────────────────────────────────── */
 .contact-info {
   display: grid;
@@ -267,7 +293,7 @@ main { flex: 1; }
 }
 
 .contact-info__item h3 {
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
@@ -297,14 +323,29 @@ main { flex: 1; }
 
 /* ── Auto-fill Card Grid (for 7 industries etc.) ──── */
 .card-grid--auto {
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.card-grid--auto .card {
+  padding: 1rem 1.25rem;
+  text-align: center;
+}
+
+.card-grid--auto .card h3 {
+  margin-bottom: 0;
+  white-space: nowrap;
+  font-size: 0.95rem;
 }
 
 /* ── Partner Spotlight ─────────────────────────────── */
 .partner {
   display: flex;
   align-items: center;
-  gap: 3rem;
+  justify-content: center;
+  gap: 2.5rem;
+  text-align: left;
+  margin-top: 2rem;
 }
 
 .partner__logo {
@@ -324,7 +365,7 @@ main { flex: 1; }
 }
 
 .partner__info h3 {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
@@ -333,6 +374,7 @@ main { flex: 1; }
   color: var(--text-muted);
   font-size: 0.95rem;
   line-height: 1.6;
+  max-width: 720px;
 }
 
 /* ── Photo Gallery ─────────────────────────────────── */
@@ -376,6 +418,8 @@ main { flex: 1; }
 /* ── Form ──────────────────────────────────────────── */
 .form {
   max-width: 640px;
+  margin: 0 auto;
+  text-align: left;
 }
 
 .form__group {
@@ -529,13 +573,17 @@ footer {
   }
 
   .section__title {
-    font-size: 1.75rem;
+    font-size: 2.5rem;
   }
 
   .card-grid,
   .contact-info,
   .gallery {
     grid-template-columns: 1fr;
+  }
+
+  .card-grid--auto {
+    grid-template-columns: 1fr 1fr;
   }
 
   .values-grid {
