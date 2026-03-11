@@ -350,18 +350,18 @@ main { flex: 1; }
 
 .partner__logo {
   flex-shrink: 0;
-  width: 180px;
-  height: 100px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  width: 220px;
+  background: #fff;
   border-radius: var(--radius);
+  padding: 1rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+}
+
+.partner__logo img {
+  max-width: 100%;
+  height: auto;
 }
 
 .partner__info h3 {
