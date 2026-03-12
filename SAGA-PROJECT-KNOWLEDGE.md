@@ -33,11 +33,10 @@ SAGA is not PSI. SAGA represents PSI. Do not confuse the two.
 
 ## SAGA Team Contact Info
 
-- Mike Krupoff: mike@saga-seals.com / (510) 915-7119
-- Stu Krupoff: stu@saga-seals.com / (949) 337-9563
+- Mike Krupoff: mike@sagareps.com / (510) 915-7119
+- Stu Krupoff: stu@sagareps.com / (949) 337-9563
 - Business Gmail: sagareps1@gmail.com (used for Formspree and general account setup)
-
-Note: Email addresses on the site currently use @saga-seals.com as a placeholder. Custom domain email has not been set up yet — pending domain name purchase decision (saga.com is taken/expensive, considering alternatives like saga-seals.com).
+- Domain: sagareps.com
 
 ---
 
@@ -151,7 +150,7 @@ Sections alternate between default (`section`) and alt (`section--alt`) backgrou
 - GitHub repo set up, PR #1 open
 
 **Pending:**
-- Buy domain (saga-seals.com or similar — saga.com too expensive)
+- Buy domain (sagareps.com or similar — saga.com too expensive)
 - Set up custom email (@saga domain) for Stu and Mike
 - Update email addresses on site once domain email is live
 - Add real seal photos to gallery sections

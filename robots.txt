@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://saga-seals.com/sitemap.xml
+Sitemap: https://sagareps.com/sitemap.xml
