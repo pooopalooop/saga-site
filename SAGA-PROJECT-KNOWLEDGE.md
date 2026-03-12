@@ -33,8 +33,11 @@ SAGA is not PSI. SAGA represents PSI. Do not confuse the two.
 
 ## SAGA Team Contact Info
 
-- Mike Krupoff: [placeholder email] / [placeholder cell]
-- Stu Krupoff: [placeholder email] / [placeholder cell]
+- Mike Krupoff: mike@saga-seals.com / (510) 915-7119
+- Stu Krupoff: stu@saga-seals.com / (949) 337-9563
+- Business Gmail: sagareps1@gmail.com (used for Formspree and general account setup)
+
+Note: Email addresses on the site currently use @saga-seals.com as a placeholder. Custom domain email has not been set up yet — pending domain name purchase decision (saga.com is taken/expensive, considering alternatives like saga-seals.com).
 
 ---
 
@@ -89,12 +92,14 @@ Five pages:
 ## Design Direction
 
 - Dark theme inspired by loomaide.com
-- Purple accent color (#c8a2ff)
+- Background: #0a0a0a, Surface: #161616, Accent: #c8a2ff (purple)
+- Google Fonts: Inter
 - Clean, modern, professional
 - Mobile responsive
 - Sticky nav with backdrop blur
-- Text-based logo for now (no logo designed yet)
-- Photo gallery planned for seal applications (no confidential designs)
+- Text-based "SAGA" logo in nav (no custom logo designed yet)
+- PSI logo integrated on all pages (images/psi-logo.png) in white container with rounded corners
+- Photo gallery section exists with placeholder icons — real seal photos to be added later (no confidential designs)
 
 ---
 
@@ -103,9 +108,13 @@ Five pages:
 - Built with plain HTML, CSS, and JavaScript (no frameworks)
 - Shared styles.css file
 - Git version control, GitHub repo (username: pooopalooop, repo: saga-site)
-- VS Code with Live Server extension for local preview
+- Current working branch: claude/modest-ride (PR #1 open)
+- Dev server: `npx serve` on port 8080 (configured in .claude/launch.json)
 - Claude Code used for development
-- Free hosting (platform TBD)
+- Form submissions: Formspree (endpoint: https://formspree.io/f/mlgpbvdo) — sends to sagareps1@gmail.com
+- Favicon: SVG file (purple "S" on dark background, matches brand accent color)
+- SEO: Meta descriptions and Open Graph tags added to all 5 pages
+- Free hosting (platform TBD — GitHub Pages, Netlify, or Vercel under consideration)
 
 ---
 
@@ -115,3 +124,38 @@ Five pages:
 - The site should feel like an industrial B2B company that knows sealing technology, not a generic agency.
 - Future expansion: the site structure should allow adding new product lines and manufacturers without rebuilding.
 - All PSI product details, specs, and technical data in this project's reference docs (PDFs) can be used for writing site copy. Do not include anything marked proprietary or confidential on public-facing pages.
+
+---
+
+## Page Section Order (Consistent Across All Pages)
+
+Every page follows this bottom-of-page pattern:
+1. (Page-specific content sections)
+2. Who We Represent (PSI partner spotlight) — second-to-last
+3. Contact section with CTA + Stu & Mike's info — last
+4. Footer
+
+Sections alternate between default (`section`) and alt (`section--alt`) backgrounds for visual rhythm.
+
+---
+
+## Current Status / Remaining Tasks
+
+**Completed:**
+- All 5 pages built with content, nav, footer
+- PSI logo integrated on all pages
+- Real phone numbers for Stu and Mike on all pages
+- Formspree contact form live (sends to sagareps1@gmail.com)
+- SEO meta tags and Open Graph tags on all pages
+- SVG favicon on all pages
+- GitHub repo set up, PR #1 open
+
+**Pending:**
+- Buy domain (saga-seals.com or similar — saga.com too expensive)
+- Set up custom email (@saga domain) for Stu and Mike
+- Update email addresses on site once domain email is live
+- Add real seal photos to gallery sections
+- Final copy review and polish
+- Deploy to hosting (GitHub Pages, Netlify, or Vercel)
+- Connect custom domain to hosting
+- Merge PR #1 to main

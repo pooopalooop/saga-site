@@ -9,21 +9,31 @@
   <meta property="og:title" content="SAGA - Schedule an Appointment">
   <meta property="og:description" content="Let's discuss your sealing challenge. Tell us about your application and we'll connect you with the right solution.">
   <meta property="og:type" content="website">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data:; form-action https://formspree.io; frame-ancestors 'none'; script-src 'self'">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <nav>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <nav role="navigation" aria-label="Main navigation">
     <a href="index.html" class="logo">SAGA</a>
-    <ul>
+    <button class="nav__toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+    </button>
+    <ul class="nav__menu">
       <li><a href="index.html">Home</a></li>
       <li><a href="about.html">About</a></li>
       <li><a href="products.html">Solutions</a></li>
       <li><a href="industries.html">Industries</a></li>
-      <li><a href="contact.html" class="active">Schedule an Appointment</a></li>
+      <li><a href="contact.html" class="active" aria-current="page">Schedule an Appointment</a></li>
     </ul>
   </nav>
 
-  <main>
+  <main id="main">
     <!-- Hero -->
     <section class="hero">
       <div class="hero__inner">
@@ -42,26 +52,26 @@
           <div class="form__row">
             <div class="form__group">
               <label class="form__label" for="name">Full Name</label>
-              <input class="form__input" type="text" id="name" name="name" placeholder="Jane Smith" required>
+              <input class="form__input" type="text" id="name" name="name" placeholder="Jane Smith" required aria-required="true" minlength="2" maxlength="100" autocomplete="name">
             </div>
             <div class="form__group">
               <label class="form__label" for="company">Company</label>
-              <input class="form__input" type="text" id="company" name="company" placeholder="Acme Engineering" required>
+              <input class="form__input" type="text" id="company" name="company" placeholder="Acme Engineering" required aria-required="true" minlength="2" maxlength="100" autocomplete="organization">
             </div>
           </div>
           <div class="form__row">
             <div class="form__group">
               <label class="form__label" for="email">Email</label>
-              <input class="form__input" type="email" id="email" name="email" placeholder="jane@acme.com" required>
+              <input class="form__input" type="email" id="email" name="email" placeholder="jane@acme.com" required aria-required="true" maxlength="254" autocomplete="email">
             </div>
             <div class="form__group">
               <label class="form__label" for="phone">Phone</label>
-              <input class="form__input" type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000">
+              <input class="form__input" type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000" maxlength="20" autocomplete="tel">
             </div>
           </div>
           <div class="form__group">
             <label class="form__label" for="industry">Industry</label>
-            <select class="form__select" id="industry" name="industry" required>
+            <select class="form__select" id="industry" name="industry" required aria-required="true">
               <option value="" disabled selected>Select your industry</option>
               <option value="aerospace">Aerospace &amp; Space</option>
               <option value="medical">Medical Devices</option>
@@ -75,9 +85,10 @@
           </div>
           <div class="form__group">
             <label class="form__label" for="description">Describe Your Application</label>
-            <textarea class="form__textarea" id="description" name="description" placeholder="Tell us about the sealing challenge, including operating environment, media, temperature, pressure, or any specific requirements."></textarea>
+            <textarea class="form__textarea" id="description" name="description" placeholder="Tell us about the sealing challenge, including operating environment, media, temperature, pressure, or any specific requirements." required aria-required="true" minlength="10" maxlength="2000"></textarea>
           </div>
           <button type="submit" class="btn btn--primary">Schedule an Appointment</button>
+          <p class="form__privacy-note">Your information is submitted securely and will only be used to respond to your inquiry.</p>
         </form>
       </div>
     </section>
@@ -104,12 +115,12 @@
         <div class="contact-info">
           <div class="contact-info__item">
             <h3>Stu Krupoff</h3>
-            <p>stu@saga-seals.com</p>
+            <p><a href="mailto:stu@saga-seals.com" class="email-link"><span class="email" aria-label="stu at saga-seals dot com">moc.slaes-agas@uts</span></a></p>
             <p>(949) 337-9563</p>
           </div>
           <div class="contact-info__item">
             <h3>Mike Krupoff</h3>
-            <p>mike@saga-seals.com</p>
+            <p><a href="mailto:mike@saga-seals.com" class="email-link"><span class="email" aria-label="mike at saga-seals dot com">moc.slaes-agas@ekim</span></a></p>
             <p>(510) 915-7119</p>
           </div>
         </div>
@@ -117,7 +128,7 @@
     </section>
   </main>
 
-  <footer>
+  <footer role="contentinfo">
     <div class="footer__inner">
       <span class="footer__logo">SAGA</span>
       <ul class="footer__links">
@@ -129,5 +140,6 @@
       <span class="footer__copy">&copy; 2026 SAGA. All rights reserved.</span>
     </div>
   </footer>
+  <script src="menu.js"></script>
 </body>
 </html>

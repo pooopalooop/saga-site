@@ -10,13 +10,49 @@
   <meta property="og:description" content="Your partner for engineered sealing solutions. We connect engineers with the right seal technology for critical applications.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="images/psi-logo.png">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data:; form-action https://formspree.io; frame-ancestors 'none'; script-src 'self'">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "SAGA",
+    "description": "Manufacturer's representative connecting engineers with high-performance sealing solutions.",
+    "url": "https://saga-seals.com",
+    "logo": "https://saga-seals.com/favicon.svg",
+    "contactPoint": [
+      {
+        "@type": "ContactPoint",
+        "telephone": "+1-949-337-9563",
+        "contactType": "sales",
+        "name": "Stu Krupoff"
+      },
+      {
+        "@type": "ContactPoint",
+        "telephone": "+1-510-915-7119",
+        "contactType": "sales",
+        "name": "Mike Krupoff"
+      }
+    ],
+    "areaServed": "US",
+    "knowsAbout": ["sealing solutions", "O-rings", "spring-energized seals", "aerospace seals", "medical device seals", "semiconductor seals"]
+  }
+  </script>
 </head>
 <body>
-  <nav>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <nav role="navigation" aria-label="Main navigation">
     <a href="index.html" class="logo">SAGA</a>
-    <ul>
-      <li><a href="index.html" class="active">Home</a></li>
+    <button class="nav__toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+    </button>
+    <ul class="nav__menu">
+      <li><a href="index.html" class="active" aria-current="page">Home</a></li>
       <li><a href="about.html">About</a></li>
       <li><a href="products.html">Solutions</a></li>
       <li><a href="industries.html">Industries</a></li>
@@ -24,7 +60,7 @@
     </ul>
   </nav>
 
-  <main>
+  <main id="main">
     <!-- Hero -->
     <section class="hero">
       <div class="hero__inner">
@@ -133,12 +169,12 @@
         <div class="contact-info">
           <div class="contact-info__item">
             <h3>Stu Krupoff</h3>
-            <p>stu@saga-seals.com</p>
+            <p><a href="mailto:stu@saga-seals.com" class="email-link"><span class="email" aria-label="stu at saga-seals dot com">moc.slaes-agas@uts</span></a></p>
             <p>(949) 337-9563</p>
           </div>
           <div class="contact-info__item">
             <h3>Mike Krupoff</h3>
-            <p>mike@saga-seals.com</p>
+            <p><a href="mailto:mike@saga-seals.com" class="email-link"><span class="email" aria-label="mike at saga-seals dot com">moc.slaes-agas@ekim</span></a></p>
             <p>(510) 915-7119</p>
           </div>
         </div>
@@ -146,7 +182,7 @@
     </section>
   </main>
 
-  <footer>
+  <footer role="contentinfo">
     <div class="footer__inner">
       <span class="footer__logo">SAGA</span>
       <ul class="footer__links">
@@ -157,11 +193,7 @@
       </ul>
       <span class="footer__copy">&copy; 2026 SAGA. All rights reserved.</span>
     </div>
-    <div class="now-playing">
-      <span class="now-playing__icon">&#9835;</span>
-      <span>Now Playing:</span>
-      <a href="#" target="_blank" rel="noopener">Placeholder Track &ndash; Artist Name</a>
-    </div>
   </footer>
+  <script src="menu.js"></script>
 </body>
 </html>
