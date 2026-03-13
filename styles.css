@@ -267,7 +267,7 @@ main { flex: 1; }
 
 /* ── Section Headings ──────────────────────────────── */
 .section__label {
-  font-size: 0.8rem;
+  font-size: 0.88rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -283,9 +283,9 @@ main { flex: 1; }
 }
 
 .section__subtitle {
-  font-size: 1.05rem;
+  font-size: 1.155rem;
   color: var(--text-muted);
-  max-width: 720px;
+  max-width: none;
   line-height: 1.7;
   margin-bottom: 3rem;
   margin-left: auto;
@@ -316,6 +316,7 @@ main { flex: 1; }
 .card__icon {
   font-size: 1.75rem;
   margin-bottom: 1rem;
+  color: var(--accent);
 }
 
 .card h3 {
@@ -470,26 +471,29 @@ main { flex: 1; }
 }
 
 .gallery__item {
-  aspect-ratio: 4 / 3;
   background: var(--surface);
-  border: 1px solid var(--border);
   border-radius: var(--radius);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  transition: border-color 0.25s;
+  transition: box-shadow 0.25s;
   overflow: hidden;
+  box-shadow: 0 0 0 1px var(--border);
 }
 
 .gallery__item:hover {
-  border-color: #333;
+  box-shadow: 0 0 0 1px #333;
 }
 
-.gallery__icon {
-  font-size: 2.5rem;
-  color: var(--text-muted);
+.gallery__img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  filter: brightness(0.85);
+  transition: filter 0.3s;
+}
+
+.gallery__item:hover .gallery__img {
+  filter: brightness(0.95);
 }
 
 .gallery__label {
@@ -497,7 +501,7 @@ main { flex: 1; }
   font-weight: 500;
   color: var(--text-muted);
   text-align: center;
-  padding: 0 1rem;
+  padding: 0.75rem 1rem;
 }
 
 /* ── Form ──────────────────────────────────────────── */
@@ -563,6 +567,44 @@ main { flex: 1; }
   font-size: 0.8rem;
   color: var(--text-muted);
   margin-top: 1rem;
+}
+
+/* ── Scheduler Callout ────────────────────────────── */
+.scheduler-callout {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 3rem;
+  padding: 1.5rem 2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.scheduler-callout__icon {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+.scheduler-callout__text {
+  flex: 1;
+}
+
+.scheduler-callout__heading {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.scheduler-callout__sub {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.scheduler-callout .btn {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 /* ── Footer ────────────────────────────────────────── */
@@ -691,6 +733,13 @@ footer {
     grid-template-columns: 1fr;
   }
 
+  .scheduler-callout {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
   /* Touch targets */
   .card .link,
   .footer__links a,
@@ -721,11 +770,11 @@ footer {
   }
 
   .section__subtitle {
-    font-size: 0.95rem;
+    font-size: 1.045rem;
   }
 
   .section__label {
-    font-size: 0.75rem;
+    font-size: 0.825rem;
   }
 
   .section {

@@ -20,12 +20,12 @@ SAGA is run by Mike Krupoff and his father Stu Krupoff.
 - Phone: 714-662-5918
 - PSI designs and manufactures high-performance engineered polymer seals, bearings, and related components
 - AS9100D certified (quality management system for aerospace and defense)
-- Proprietary Duron material formulations (200+ formulations)
+- Proprietary Duron® material formulations (200+ formulations)
 - Capabilities: custom engineering services, product design, reverse engineering, rapid prototyping, FEA, installation tools
 - Manufacturing: CNC machining, digital molding presses, sintering ovens, cleanroom manufacturing
 - Spring energizer types: angled coil, cantilever, helical coil
 - Temperature range: -450F to +600F
-- Key value props: polymer sealing expertise, Duron materials, spring technologies, rapid product development, clean manufacturing, vertically integrated
+- Key value props: polymer sealing expertise, Duron® materials, spring technologies, rapid product development, clean manufacturing, vertically integrated
 
 SAGA is not PSI. SAGA represents PSI. Do not confuse the two.
 
