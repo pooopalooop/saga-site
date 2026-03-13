@@ -331,6 +331,64 @@ main { flex: 1; }
   line-height: 1.6;
 }
 
+/* ── Product Cards (with images) ──────────────────── */
+.card-grid--products {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.card--product {
+  padding: 0;
+  overflow: hidden;
+}
+
+.card--product .card__body {
+  padding: 1.5rem 2rem 2rem;
+}
+
+.card__img {
+  width: 100%;
+  display: block;
+  filter: brightness(0.85);
+  transition: filter 0.3s;
+}
+
+.card--product:hover .card__img {
+  filter: brightness(0.95);
+}
+
+/* ── Application List Cards ──────────────────────── */
+.card--apps {
+  padding: 2rem;
+}
+
+.card--apps h3 {
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.card--apps ul {
+  list-style: none;
+  text-align: left;
+}
+
+.card--apps ul li {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  padding: 0.3rem 0;
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.card--apps ul li::before {
+  content: "◎";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 0.6rem;
+  top: 0.55rem;
+}
+
 .card .link {
   display: inline-block;
   margin-top: 1.25rem;
@@ -709,6 +767,7 @@ footer {
   }
 
   .card-grid,
+  .card-grid--products,
   .contact-info,
   .contact-section .contact-info,
   .gallery {
