@@ -48,7 +48,7 @@
         <span class="section__label">Schedule an Appointment</span>
         <h2 class="section__title">Tell us about your project</h2>
         <p class="section__subtitle">Fill out the form below and a member of our team will follow up promptly.</p>
-        <form class="form" action="https://formspree.io/f/mlgpbvdo" method="POST">
+        <form class="form" action="https://formspree.io/f/mlgpbvdo" method="POST" enctype="multipart/form-data">
           <div class="form__row">
             <div class="form__group">
               <label class="form__label" for="name">Full Name</label>
@@ -90,6 +90,10 @@
           <div class="form__group">
             <label class="form__label" for="description">Describe Your Application</label>
             <textarea class="form__textarea" id="description" name="description" placeholder="Tell us about the sealing challenge, including operating environment, media, temperature, pressure, or any specific requirements." required aria-required="true" minlength="10" maxlength="2000"></textarea>
+          </div>
+          <div class="form__group">
+            <label class="form__label" for="attachment">Upload a File <span style="font-weight:400; color: var(--text-muted);">(optional - drawings, specs, photos)</span></label>
+            <input class="form__input form__file" type="file" id="attachment" name="attachment" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.step,.stp,.dxf,.dwg">
           </div>
           <button type="submit" class="btn btn--primary">Submit Contact Form</button>
           <p class="form__privacy-note">Your information is submitted securely and will only be used to respond to your inquiry.</p>
