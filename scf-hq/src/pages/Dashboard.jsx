@@ -1,7 +1,7 @@
-import { useState } from 'react'
 import { useAuth } from '../lib/auth'
 import { useTeamRoster, useTeamCapState } from '../hooks/useTeamData'
 import { SPORT_CONFIG } from '../lib/constants'
+import { useGlobalSport } from '../lib/sportContext'
 import SportTabs from '../components/SportTabs'
 
 const STATUS_BADGES = {
@@ -142,7 +142,7 @@ function RosterTable({ contracts, sport }) {
 }
 
 export default function Dashboard() {
-  const [activeSport, setActiveSport] = useState('nfl')
+  const { globalSport: activeSport } = useGlobalSport()
   const { team } = useAuth()
   const { data: allContracts, isLoading } = useTeamRoster(team?.id)
   const { data: capStates } = useTeamCapState(team?.id)
@@ -163,7 +163,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <SportTabs activeSport={activeSport} onSelect={setActiveSport} />
+      <SportTabs />
 
       <CapSummary capState={sportCapState} sport={activeSport} />
 
