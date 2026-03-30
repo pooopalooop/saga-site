@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../lib/auth'
 import { useTeamCapState, useTeamRoster } from '../hooks/useTeamData'
 import { supabase, isConfigured } from '../lib/supabase'
+import { useGlobalSport } from '../lib/sportContext'
 import { SPORT_CONFIG, calcFaMinimum } from '../lib/constants'
 import SportTabs from '../components/SportTabs'
 
@@ -420,7 +421,7 @@ function SubmitBidTab({ sport, prefillBid }) {
 }
 
 export default function FaBidTrackerPage() {
-  const [sport, setSport] = useState('nfl')
+  const { globalSport: sport } = useGlobalSport()
   const [activeTab, setActiveTab] = useState('active')
   const [outbidTarget, setOutbidTarget] = useState(null)
 
@@ -440,7 +441,7 @@ export default function FaBidTrackerPage() {
         </div>
       </div>
 
-      <SportTabs activeSport={sport} onSelect={s => { setSport(s); setOutbidTarget(null) }} />
+      <SportTabs />
 
       {/* Inner Tabs */}
       <div className="flex gap-1 mb-6">

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider, useAuth } from './lib/auth'
+import { SportProvider } from './lib/sportContext'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import LoginPage from './pages/LoginPage'
@@ -98,7 +99,9 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppShell />
+        <SportProvider>
+          <AppShell />
+        </SportProvider>
       </AuthProvider>
     </QueryClientProvider>
   )

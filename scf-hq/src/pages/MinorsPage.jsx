@@ -1,10 +1,25 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../lib/auth'
 import { useTeamRoster } from '../hooks/useTeamData'
 import { supabase, isConfigured } from '../lib/supabase'
 import { SPORT_CONFIG, ELIGIBILITY_LIMITS } from '../lib/constants'
+import { useGlobalSport } from '../lib/sportContext'
 import SportTabs from '../components/SportTabs'
+
+const MINORS_MIN_MS = 5 * 24 * 60 * 60 * 1000
+
+function msUntilCallUpEligible(placedAt) {
+  if (!placedAt) return 0
+  return Math.max(0, new Date(placedAt).getTime() + MINORS_MIN_MS - Date.now())
+}
+
+function formatTimeLeft(ms) {
+  const days = Math.floor(ms / (24 * 3600 * 1000))
+  const hours = Math.floor((ms % (24 * 3600 * 1000)) / 3600_000)
+  if (days >= 1) return `${days}d ${hours}h`
+  return `${hours}h`
+}
 
 function EligibilityBar({ label, current, limit }) {
   const pct = Math.min(100, Math.round((current / limit) * 100))
@@ -100,8 +115,68 @@ function EligibilityPanel({ player, sport, stats, loading }) {
   )
 }
 
+function MinorsRosterRow({ contract, onCallUp, callingUp, isCommissioner }) {
+  const [now, setNow] = useState(Date.now())
+
+  useEffect(() => {
+    if (!contract.placed_at || contract.status !== 'minors') return
+    const t = setInterval(() => setNow(Date.now()), 60_000)
+    return () => clearInterval(t)
+  }, [contract.placed_at, contract.status])
+
+  const msLeft = contract.status === 'minors' ? msUntilCallUpEligible(contract.placed_at) : 0
+  const locked = msLeft > 0
+
+  return (
+    <tr className="hover:bg-surface2 border-b border-border last:border-b-0">
+      <td className="py-2 px-3 text-txt font-medium">{contract.players?.name}</td>
+      <td className="py-2 px-3 font-mono text-[11px] text-txt3">{contract.players?.position}</td>
+      <td className="py-2 px-3">
+        <span className={`font-mono text-[9px] font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded-sm ${
+          contract.status === 'drafted'
+            ? 'bg-[rgba(59,130,246,0.15)] text-blue border border-[rgba(59,130,246,0.3)]'
+            : 'bg-[rgba(34,197,94,0.15)] text-green border border-[rgba(34,197,94,0.3)]'
+        }`}>
+          {contract.status}
+        </span>
+      </td>
+      <td className="py-2 px-3 text-right">
+        {onCallUp ? (
+          locked ? (
+            <div className="flex flex-col items-end gap-1">
+              <span className="font-mono text-[10px] text-txt2">
+                Call up in {formatTimeLeft(msLeft)}
+              </span>
+              <span className="font-mono text-[9px] text-txt3">5-day minimum (Sec. 13C)</span>
+              {isCommissioner && (
+                <button
+                  onClick={onCallUp}
+                  disabled={callingUp}
+                  className="font-mono text-[10px] font-semibold tracking-wider uppercase py-1 px-2 rounded-sm cursor-pointer border border-accent bg-transparent text-accent hover:bg-[rgba(245,166,35,0.1)] transition-colors disabled:opacity-50"
+                >
+                  {callingUp ? '...' : 'Override'}
+                </button>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={onCallUp}
+              disabled={callingUp}
+              className="font-mono text-[10px] font-semibold tracking-wider uppercase py-1 px-2.5 rounded-sm border-none bg-green text-black hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
+            >
+              {callingUp ? '...' : 'Call Up'}
+            </button>
+          )
+        ) : (
+          <span className="font-mono text-[10px] text-txt3">—</span>
+        )}
+      </td>
+    </tr>
+  )
+}
+
 export default function MinorsPage() {
-  const [sport, setSport] = useState('mlb')
+  const { globalSport: sport } = useGlobalSport()
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [showDropdown, setShowDropdown] = useState(false)
@@ -114,8 +189,9 @@ export default function MinorsPage() {
   const [manualPos, setManualPos] = useState('')
   const [manualTeam, setManualTeam] = useState('')
   const [submitSuccess, setSubmitSuccess] = useState(null)
+  const [callingUpId, setCallingUpId] = useState(null)
 
-  const { team } = useAuth()
+  const { team, isCommissioner } = useAuth()
   const { data: allContracts } = useTeamRoster(team?.id)
   const queryClient = useQueryClient()
   const config = SPORT_CONFIG[sport]
@@ -264,6 +340,7 @@ export default function MinorsPage() {
           salary: 0,
           status: moveType,
           rookie_contract: true,
+          placed_at: new Date().toISOString(),
         })
 
       if (cErr) throw cErr
@@ -307,6 +384,35 @@ export default function MinorsPage() {
     },
   })
 
+  const callUpMutation = useMutation({
+    mutationFn: async (contract) => {
+      setCallingUpId(contract.id)
+      const now = new Date().toISOString()
+
+      const { error: updateErr } = await supabase
+        .from('contracts')
+        .update({ status: 'active', placed_at: null, updated_at: now })
+        .eq('id', contract.id)
+
+      if (updateErr) throw updateErr
+
+      await supabase.from('transactions').insert({
+        type: 'call_up',
+        team_id: team.id,
+        player_id: contract.player_id,
+        sport,
+        notes: `${contract.players?.name} called up from minors to active roster`,
+      })
+    },
+    onSuccess: (_, contract) => {
+      setCallingUpId(null)
+      setSubmitSuccess({ player: contract.players?.name, type: 'callup' })
+      queryClient.invalidateQueries({ queryKey: ['roster'] })
+      queryClient.invalidateQueries({ queryKey: ['transactions'] })
+    },
+    onError: () => setCallingUpId(null),
+  })
+
   return (
     <div>
       <div className="flex items-start justify-between mb-6 pb-4 border-b border-border">
@@ -318,7 +424,7 @@ export default function MinorsPage() {
         </div>
       </div>
 
-      <SportTabs activeSport={sport} onSelect={s => { setSport(s); setSelectedPlayer(null); setPlayerStats(null); setSearchQuery(''); setManualMode(false) }} />
+      <SportTabs />
 
       {/* Slot Status */}
       <div className="flex gap-3 mb-6">
@@ -353,23 +459,18 @@ export default function MinorsPage() {
                   <th className="font-mono text-[9px] tracking-wider text-txt3 uppercase font-medium text-left py-2 px-3 border-b border-border">Player</th>
                   <th className="font-mono text-[9px] tracking-wider text-txt3 uppercase font-medium text-left py-2 px-3 border-b border-border">Pos</th>
                   <th className="font-mono text-[9px] tracking-wider text-txt3 uppercase font-medium text-left py-2 px-3 border-b border-border">List</th>
-                  <th className="font-mono text-[9px] tracking-wider text-txt3 uppercase font-medium text-left py-2 px-3 border-b border-border">Salary</th>
+                  <th className="font-mono text-[9px] tracking-wider text-txt3 uppercase font-medium text-right py-2 px-3 border-b border-border">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {minorsRoster.map(c => (
-                  <tr key={c.id} className="hover:bg-surface2 border-b border-border last:border-b-0">
-                    <td className="py-2 px-3 text-txt font-medium">{c.players?.name}</td>
-                    <td className="py-2 px-3 font-mono text-[11px] text-txt3">{c.players?.position}</td>
-                    <td className="py-2 px-3">
-                      <span className={`font-mono text-[9px] font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded-sm ${
-                        c.status === 'drafted' ? 'bg-[rgba(59,130,246,0.15)] text-blue border border-[rgba(59,130,246,0.3)]' : 'bg-[rgba(34,197,94,0.15)] text-green border border-[rgba(34,197,94,0.3)]'
-                      }`}>
-                        {c.status}
-                      </span>
-                    </td>
-                    <td className="py-2 px-3 font-mono text-[11px] text-accent">${c.salary}</td>
-                  </tr>
+                  <MinorsRosterRow
+                    key={c.id}
+                    contract={c}
+                    onCallUp={c.status === 'minors' ? () => callUpMutation.mutate(c) : null}
+                    callingUp={callingUpId === c.id && callUpMutation.isPending}
+                    isCommissioner={isCommissioner}
+                  />
                 ))}
               </tbody>
             </table>
@@ -507,9 +608,14 @@ export default function MinorsPage() {
         <div className="fixed inset-0 bg-[rgba(0,0,0,0.7)] z-[200] flex items-center justify-center" onClick={() => setSubmitSuccess(null)}>
           <div className="bg-surface border border-green rounded-md p-8 px-10 text-center max-w-[400px]">
             <div className="text-[36px] mb-3">&#10003;</div>
-            <div className="font-condensed text-[20px] font-bold text-green mb-2">Move Submitted</div>
+            <div className="font-condensed text-[20px] font-bold text-green mb-2">
+              {submitSuccess.type === 'callup' ? 'Player Called Up' : 'Move Submitted'}
+            </div>
             <div className="text-[13px] text-txt2 mb-5">
-              {submitSuccess.player} added to {submitSuccess.type} list
+              {submitSuccess.type === 'callup'
+                ? `${submitSuccess.player} activated to active roster`
+                : `${submitSuccess.player} added to ${submitSuccess.type} list`
+              }
             </div>
             <button onClick={() => setSubmitSuccess(null)}
               className="font-mono text-[12px] font-semibold tracking-wider uppercase py-2.5 px-6 rounded-sm cursor-pointer border-none bg-accent text-black hover:bg-accent2 transition-colors">
