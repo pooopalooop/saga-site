@@ -5,7 +5,9 @@ import { useTeamCapState, useTeamRoster } from '../hooks/useTeamData'
 import { supabase, isConfigured } from '../lib/supabase'
 import { useGlobalSport } from '../lib/sportContext'
 import { SPORT_CONFIG, calcFaMinimum } from '../lib/constants'
+import { toast } from '../lib/toast'
 import SportTabs from '../components/SportTabs'
+import SearchableSelect from '../components/SearchableSelect'
 
 function formatCountdown(msLeft) {
   if (msLeft <= 0) return { text: 'EXPIRED', color: 'text-red' }
@@ -55,7 +57,6 @@ function BidRow({ bid, now, onOutbid }) {
 function ActiveBidsTab({ sport, onOutbid }) {
   const [now, setNow] = useState(Date.now())
 
-  // Tick every second
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(interval)
@@ -65,29 +66,18 @@ function ActiveBidsTab({ sport, onOutbid }) {
     queryKey: ['fa_bids', 'active', sport],
     queryFn: async () => {
       if (!isConfigured) return []
-      const { data, error } = await supabase
+      let query = supabase
         .from('fa_bids')
         .select('*, teams:bidding_team_id(name)')
-        .eq('sport', sport)
         .in('status', ['active'])
         .order('expires_at', { ascending: true })
+      if (sport) query = query.eq('sport', sport)
+      const { data, error } = await query
       if (error) throw error
       return data
     },
     refetchInterval: 30000,
   })
-
-  // Realtime subscription
-  useEffect(() => {
-    if (!isConfigured) return
-    const channel = supabase
-      .channel('fa_bids_changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'fa_bids' }, () => {
-        // Refetch on any change
-      })
-      .subscribe()
-    return () => { supabase.removeChannel(channel) }
-  }, [])
 
   if (isLoading) {
     return <div className="text-txt3 text-center py-8 font-mono text-[11px]">Loading bids...</div>
@@ -96,7 +86,7 @@ function ActiveBidsTab({ sport, onOutbid }) {
   if (!bids?.length) {
     return (
       <div className="text-txt3 text-center py-12 font-mono text-[11px]">
-        No active bids for {sport.toUpperCase()}
+        No active bids{sport ? ` for ${sport.toUpperCase()}` : ''}
       </div>
     )
   }
@@ -110,26 +100,56 @@ function ActiveBidsTab({ sport, onOutbid }) {
   )
 }
 
-function SubmitBidTab({ sport, prefillBid }) {
+function SubmitBidTab({ sport, prefillBid, onCancel }) {
   const { team } = useAuth()
   const { data: capStates } = useTeamCapState(team?.id)
   const { data: allContracts } = useTeamRoster(team?.id)
   const queryClient = useQueryClient()
 
   const [playerName, setPlayerName] = useState(prefillBid?.player_name || '')
-  const [salary, setSalary] = useState(prefillBid ? '' : '')
+  const [salary, setSalary] = useState('')
   const [years, setYears] = useState(1)
   const [correspondingMove, setCorrespondingMove] = useState('')
-  const [searchResults, setSearchResults] = useState([])
-  const [showDropdown, setShowDropdown] = useState(false)
   const [manualMode, setManualMode] = useState(false)
   const [manualPos, setManualPos] = useState('')
   const [manualTeam, setManualTeam] = useState('')
   const [submitSuccess, setSubmitSuccess] = useState(null)
+  const [touched, setTouched] = useState(!!prefillBid)
+  const [nominationError, setNominationError] = useState('')
 
   const capState = capStates?.find(cs => cs.sport === sport)
   const sportContracts = allContracts?.filter(c => c.sport === sport && c.status === 'active') || []
   const config = SPORT_CONFIG[sport]
+
+  // Fetch today's nomination count (bids created today ET)
+  const { data: todayNomCount = 0 } = useQuery({
+    queryKey: ['fa_bids_today', team?.id, sport],
+    queryFn: async () => {
+      if (!isConfigured || !team?.id) return 0
+      const todayET = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }))
+      todayET.setHours(0, 0, 0, 0)
+      const { count } = await supabase
+        .from('fa_bids')
+        .select('id', { count: 'exact', head: true })
+        .eq('team_id', team.id)
+        .gte('created_at', todayET.toISOString())
+      return count || 0
+    },
+    enabled: !!team?.id,
+    refetchInterval: 60_000,
+  })
+
+  // Check if this is a new nomination (no prior active bids from any team on this player)
+  async function checkIsNewNomination(pName) {
+    if (!isConfigured) return false
+    const { count } = await supabase
+      .from('fa_bids')
+      .select('id', { count: 'exact', head: true })
+      .eq('player_name', pName)
+      .eq('sport', sport)
+      .eq('status', 'active')
+    return (count || 0) === 0
+  }
 
   // Calculate minimum bids if outbidding
   const minimums = useMemo(() => {
@@ -149,73 +169,84 @@ function SubmitBidTab({ sport, prefillBid }) {
 
   const checks = {
     capSpace: salaryNum > 0 ? (salaryNum <= capRemaining ? 'pass' : 'fail') : 'pending',
-    rosterSpot: rosterUsed < rosterLimit ? 'pass' : (correspondingMove ? 'pass' : 'fail'),
+    rosterSpot: !touched ? 'pending' : (rosterUsed < rosterLimit ? 'pass' : (correspondingMove ? 'pass' : 'fail')),
     bidValid: salaryNum > 0 && years >= 1 && years <= 3 ? 'pass' : 'pending',
     wholeNumber: salaryNum > 0 ? (Number.isInteger(parseFloat(salary)) ? 'pass' : 'fail') : 'pending',
   }
   const canSubmit = Object.values(checks).every(v => v === 'pass') && playerName.trim()
 
-  // Player search
-  async function handleSearch(query) {
-    setPlayerName(query)
-    if (query.length < 2) { setShowDropdown(false); return }
-
+  // Player search — returns SearchableSelect-compatible options
+  async function searchPlayers(query) {
+    setNominationError('')
+    setTouched(true)
     if (sport === 'mlb') {
       try {
         const res = await fetch(`/api/mlb/search?q=${encodeURIComponent(query)}`)
         const data = await res.json()
-        const people = (data.people || []).slice(0, 8).map(p => ({
-          name: p.fullName,
-          pos: p.primaryPosition?.abbreviation || '—',
-          team: p.currentTeam?.name || '—',
-          level: p.sport?.name || 'MLB',
-        }))
-        setSearchResults(people)
+        const people = (data.people || []).slice(0, 8)
         if (people.length === 0) setManualMode(true)
+        return people.map(p => ({
+          value: p.fullName,
+          label: p.fullName,
+          sublabel: p.currentTeam?.name || '—',
+          badge: p.primaryPosition?.abbreviation || '—',
+        }))
       } catch {
-        setSearchResults([])
         setManualMode(true)
+        return []
       }
     } else {
-      // Search existing players in Supabase
-      if (!isConfigured) { setSearchResults([]); setShowDropdown(true); return }
+      if (!isConfigured) return []
       const { data } = await supabase
         .from('players')
         .select('name, position, real_world_team')
         .eq('sport', sport)
         .ilike('name', `%${query}%`)
         .limit(8)
-      setSearchResults((data || []).map(p => ({ name: p.name, pos: p.position, team: p.real_world_team })))
+      return (data || []).map(p => ({
+        value: p.name,
+        label: p.name,
+        sublabel: p.real_world_team || '—',
+        badge: p.position || '—',
+      }))
     }
-    setShowDropdown(true)
   }
 
-  function selectResult(r) {
-    setPlayerName(r.name)
-    setShowDropdown(false)
+  function handlePlayerSelect(opt) {
+    setPlayerName(opt?.label ?? '')
     setManualMode(false)
   }
 
   const submitBid = useMutation({
     mutationFn: async () => {
-      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      setNominationError('')
 
+      // Check nomination limit for new players
+      if (!prefillBid) {
+        const isNew = await checkIsNewNomination(playerName.trim())
+        if (isNew) {
+          if (todayNomCount >= 2) {
+            throw new Error('Daily nomination limit reached (2/2). Resets at midnight ET.')
+          }
+        }
+      }
+
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
       const { error } = await supabase
         .from('fa_bids')
         .insert({
           player_name: playerName,
           sport,
           bidding_team_id: team.id,
+          team_id: team.id,
           salary: salaryNum,
           years: parseInt(years),
           expires_at: expiresAt,
           status: 'active',
           corresponding_move: correspondingMove || null,
         })
-
       if (error) throw error
 
-      // Log transaction
       await supabase.from('transactions').insert({
         type: 'fa_bid',
         team_id: team.id,
@@ -224,18 +255,50 @@ function SubmitBidTab({ sport, prefillBid }) {
       })
     },
     onSuccess: () => {
-      setSubmitSuccess({ player: playerName, salary: salaryNum, years })
+      const player = playerName
+      const sal = salaryNum
+      const yrs = years
+      setSubmitSuccess({ player, salary: sal, years: yrs })
       setPlayerName('')
       setSalary('')
       setYears(1)
       setCorrespondingMove('')
       queryClient.invalidateQueries({ queryKey: ['fa_bids'] })
+      queryClient.invalidateQueries({ queryKey: ['fa_bids_today'] })
+      queryClient.invalidateQueries({ queryKey: ['fa_bids_count'] })
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
+      toast(`FA bid submitted: ${player} $${sal}/${yrs}yr`, 'success')
+    },
+    onError: (err) => {
+      if (err?.message?.includes('nomination limit')) {
+        setNominationError(err.message)
+      } else {
+        toast('Bid submission failed — ' + (err?.message || 'try again'), 'error')
+      }
     },
   })
 
   return (
     <div>
+      {/* Nomination counter */}
+      {!prefillBid && (
+        <div className="mb-4 flex items-center gap-2">
+          <span className="font-mono text-[11px] text-txt2">Nominations today:</span>
+          <span className={`font-mono text-[12px] font-semibold ${todayNomCount >= 2 ? 'text-red' : todayNomCount >= 1 ? 'text-accent' : 'text-green'}`}>
+            {todayNomCount}/2
+          </span>
+          {todayNomCount >= 2 && (
+            <span className="font-mono text-[10px] text-red">— Daily limit reached. Resets at midnight ET.</span>
+          )}
+        </div>
+      )}
+
+      {nominationError && (
+        <div className="mb-4 bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.3)] rounded-sm px-3 py-2.5">
+          <span className="font-mono text-[12px] text-red">{nominationError}</span>
+        </div>
+      )}
+
       {/* Current bid info if outbidding */}
       {prefillBid && (
         <div className="bg-surface2 border border-border2 rounded-sm p-3.5 mb-4">
@@ -264,40 +327,22 @@ function SubmitBidTab({ sport, prefillBid }) {
       <div className="grid grid-cols-2 gap-4">
         {/* Left: Player + Bid Form */}
         <div className="bg-surface border border-border rounded p-5">
-          <div className="font-mono text-[10px] tracking-wider text-txt3 uppercase mb-4 pb-2.5 border-b border-border">
-            {prefillBid ? 'Your Bid' : 'Submit New Bid'}
+          <div className="font-mono text-[10px] tracking-wider text-txt3 uppercase mb-4 pb-2.5 border-b border-border flex items-center justify-between">
+            <span>{prefillBid ? 'Your Bid' : 'Submit New Bid'}</span>
+            {onCancel && (
+              <button onClick={onCancel} className="text-txt3 hover:text-txt2 font-mono text-[14px] leading-none cursor-pointer transition-colors" title="Cancel">✕</button>
+            )}
           </div>
 
           {/* Player Search */}
           <div className="mb-3">
             <label className="font-mono text-[10px] tracking-wider text-txt2 uppercase block mb-1.5">Player</label>
-            <div className="relative">
-              <input
-                type="text"
-                value={playerName}
-                onChange={e => handleSearch(e.target.value)}
-                onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
-                placeholder="Search player name..."
-                className="w-full bg-surface2 border border-border2 text-txt px-3 py-2.5 rounded-sm font-body text-[13px] outline-none focus:border-accent transition-colors"
-              />
-              {showDropdown && searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-border2 rounded-sm shadow-lg z-10 max-h-[200px] overflow-y-auto">
-                  {searchResults.map((r, i) => (
-                    <button
-                      key={i}
-                      onClick={() => selectResult(r)}
-                      className="w-full text-left px-3 py-2 hover:bg-surface2 cursor-pointer flex justify-between items-center border-b border-border last:border-b-0"
-                    >
-                      <div>
-                        <div className="text-[13px] text-txt font-medium">{r.name}</div>
-                        <div className="text-[11px] text-txt3">{r.team}</div>
-                      </div>
-                      <span className="font-mono text-[10px] text-txt3">{r.pos}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <SearchableSelect
+              value={playerName}
+              onChange={handlePlayerSelect}
+              onSearch={searchPlayers}
+              placeholder="Search player name..."
+            />
             {manualMode && (
               <div className="mt-2 p-2.5 bg-surface3 border border-border2 rounded-sm">
                 <div className="font-mono text-[9px] text-accent mb-1.5 uppercase tracking-wider">Manual Entry</div>
@@ -421,7 +466,9 @@ function SubmitBidTab({ sport, prefillBid }) {
 }
 
 export default function FaBidTrackerPage() {
-  const { globalSport: sport } = useGlobalSport()
+  const { globalSport, lastIndividualSport } = useGlobalSport()
+  const sportFilter = globalSport === 'all' ? null : globalSport
+  const sport = sportFilter || lastIndividualSport
   const [activeTab, setActiveTab] = useState('active')
   const [outbidTarget, setOutbidTarget] = useState(null)
 
@@ -467,10 +514,14 @@ export default function FaBidTrackerPage() {
       </div>
 
       {activeTab === 'active' && (
-        <ActiveBidsTab sport={sport} onOutbid={handleOutbid} />
+        <ActiveBidsTab sport={sportFilter} onOutbid={handleOutbid} />
       )}
       {activeTab === 'submit' && (
-        <SubmitBidTab sport={sport} prefillBid={outbidTarget} />
+        <SubmitBidTab
+          sport={sport}
+          prefillBid={outbidTarget}
+          onCancel={() => { setActiveTab('active'); setOutbidTarget(null) }}
+        />
       )}
     </div>
   )
