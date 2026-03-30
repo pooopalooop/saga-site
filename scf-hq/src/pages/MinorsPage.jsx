@@ -115,7 +115,7 @@ function EligibilityPanel({ player, sport, stats, loading }) {
   )
 }
 
-function MinorsRosterRow({ contract, onCallUp, callingUp }) {
+function MinorsRosterRow({ contract, onCallUp, callingUp, isCommissioner }) {
   const [now, setNow] = useState(Date.now())
 
   useEffect(() => {
@@ -143,9 +143,21 @@ function MinorsRosterRow({ contract, onCallUp, callingUp }) {
       <td className="py-2 px-3 text-right">
         {onCallUp ? (
           locked ? (
-            <span className="font-mono text-[10px] text-accent">
-              Call up in {formatTimeLeft(msLeft)}
-            </span>
+            <div className="flex flex-col items-end gap-1">
+              <span className="font-mono text-[10px] text-txt2">
+                Call up in {formatTimeLeft(msLeft)}
+              </span>
+              <span className="font-mono text-[9px] text-txt3">5-day minimum (Sec. 13C)</span>
+              {isCommissioner && (
+                <button
+                  onClick={onCallUp}
+                  disabled={callingUp}
+                  className="font-mono text-[10px] font-semibold tracking-wider uppercase py-1 px-2 rounded-sm cursor-pointer border border-accent bg-transparent text-accent hover:bg-[rgba(245,166,35,0.1)] transition-colors disabled:opacity-50"
+                >
+                  {callingUp ? '...' : 'Override'}
+                </button>
+              )}
+            </div>
           ) : (
             <button
               onClick={onCallUp}
@@ -179,7 +191,7 @@ export default function MinorsPage() {
   const [submitSuccess, setSubmitSuccess] = useState(null)
   const [callingUpId, setCallingUpId] = useState(null)
 
-  const { team } = useAuth()
+  const { team, isCommissioner } = useAuth()
   const { data: allContracts } = useTeamRoster(team?.id)
   const queryClient = useQueryClient()
   const config = SPORT_CONFIG[sport]
@@ -457,6 +469,7 @@ export default function MinorsPage() {
                     contract={c}
                     onCallUp={c.status === 'minors' ? () => callUpMutation.mutate(c) : null}
                     callingUp={callingUpId === c.id && callUpMutation.isPending}
+                    isCommissioner={isCommissioner}
                   />
                 ))}
               </tbody>

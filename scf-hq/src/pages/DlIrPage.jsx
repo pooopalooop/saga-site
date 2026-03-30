@@ -102,11 +102,11 @@ function ValidationRow({ label, status, detail }) {
   )
 }
 
-function ReservePlayerRow({ contract, onActivate, activating }) {
+function ReservePlayerRow({ contract, onActivate, activating, isCommissioner }) {
   const [now, setNow] = useState(Date.now())
 
   useEffect(() => {
-    if (contract.status !== 'dl' && contract.status !== 'minors') return
+    if (contract.status !== 'dl') return
     const t = setInterval(() => setNow(Date.now()), 60_000)
     return () => clearInterval(t)
   }, [contract.status])
@@ -137,11 +137,20 @@ function ReservePlayerRow({ contract, onActivate, activating }) {
       </td>
       <td className="py-2.5 px-3 text-right">
         {locked ? (
-          <div className="text-right">
-            <span className="font-mono text-[10px] text-accent">
+          <div className="flex flex-col items-end gap-1">
+            <span className="font-mono text-[10px] text-txt2">
               Eligible in {formatTimeLeft(msLeft)}
             </span>
-            <div className="font-mono text-[9px] text-txt3 mt-0.5">5-day DL minimum (Sec. 11)</div>
+            <span className="font-mono text-[9px] text-txt3">5-day DL minimum (Sec. 11)</span>
+            {isCommissioner && (
+              <button
+                onClick={() => onActivate(contract)}
+                disabled={activating}
+                className="font-mono text-[10px] font-semibold tracking-wider uppercase py-1 px-2 rounded-sm cursor-pointer border border-accent bg-transparent text-accent hover:bg-[rgba(245,166,35,0.1)] transition-colors disabled:opacity-50"
+              >
+                {activating ? '...' : 'Override'}
+              </button>
+            )}
           </div>
         ) : (
           <button
@@ -165,7 +174,7 @@ export default function DlIrPage() {
   const [submitSuccess, setSubmitSuccess] = useState(null)
   const [activatingId, setActivatingId] = useState(null)
 
-  const { team } = useAuth()
+  const { team, isCommissioner } = useAuth()
   const { data: allContracts } = useTeamRoster(team?.id)
   const { data: capStates } = useTeamCapState(team?.id)
   const queryClient = useQueryClient()
@@ -452,6 +461,7 @@ export default function DlIrPage() {
                       contract={c}
                       onActivate={(contract) => activateMutation.mutate(contract)}
                       activating={activatingId === c.id && activateMutation.isPending}
+                      isCommissioner={isCommissioner}
                     />
                   ))}
                 </tbody>
