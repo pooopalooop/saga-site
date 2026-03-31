@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stu Krupoff - Schedule an Appointment</title>
+  <meta name="description" content="Schedule an appointment with our team to discuss your sealing challenge. Tell us about your application and we'll connect you with the right solution.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="Stu Krupoff - Schedule an Appointment">
+  <meta property="og:description" content="Let's discuss your sealing challenge. Tell us about your application and we'll connect you with the right solution.">
+  <meta property="og:type" content="website">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data:; form-action https://formspree.io; frame-ancestors 'none'; script-src 'self'">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <nav role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="logo">STU KRUPOFF</a>
+    <button class="nav__toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+    </button>
+    <ul class="nav__menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="products.html">Solutions</a></li>
+      <li><a href="industries.html">Industries</a></li>
+      <li><a href="contact.html" class="active" aria-current="page">Schedule an Appointment</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero__inner">
+        <h1><span class="accent">Let's discuss your</span><br>sealing challenge</h1>
+        <p>Tell us about your application and we'll connect you with the right solution and engineering support.</p>
+      </div>
+    </section>
+
+    <!-- Appointment Form -->
+    <section class="section section--alt">
+      <div class="section__inner">
+        <span class="section__label">Schedule an Appointment</span>
+        <h2 class="section__title">Tell us about your project</h2>
+        <p class="section__subtitle">Fill out the form below and a member of our team will follow up promptly.</p>
+        <form class="form" action="https://formspree.io/f/mlgpbvdo" method="POST" enctype="multipart/form-data">
+          <div class="form__row">
+            <div class="form__group">
+              <label class="form__label" for="name">Full Name</label>
+              <input class="form__input" type="text" id="name" name="name" placeholder="Jane Smith" required aria-required="true" minlength="2" maxlength="100" autocomplete="name">
+            </div>
+            <div class="form__group">
+              <label class="form__label" for="company">Company</label>
+              <input class="form__input" type="text" id="company" name="company" placeholder="Acme Engineering" required aria-required="true" minlength="2" maxlength="100" autocomplete="organization">
+            </div>
+          </div>
+          <div class="form__row">
+            <div class="form__group">
+              <label class="form__label" for="email">Email</label>
+              <input class="form__input" type="email" id="email" name="email" placeholder="jane@acme.com" required aria-required="true" maxlength="254" autocomplete="email">
+            </div>
+            <div class="form__group">
+              <label class="form__label" for="phone">Phone</label>
+              <input class="form__input" type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000" maxlength="20" autocomplete="tel">
+            </div>
+          </div>
+          <div class="form__group">
+            <label class="form__label" for="location">City, State, Country</label>
+            <input class="form__input" type="text" id="location" name="location" placeholder="Los Angeles, CA, USA" maxlength="150" autocomplete="address-level2">
+          </div>
+          <div class="form__group">
+            <label class="form__label" for="industry">Industry</label>
+            <select class="form__select" id="industry" name="industry" required aria-required="true">
+              <option value="" disabled selected>Select your industry</option>
+              <option value="aerospace">Aerospace &amp; Space</option>
+              <option value="medical">Medical Devices</option>
+              <option value="lab-instruments">Analytical &amp; Clinical Lab Instruments</option>
+              <option value="semiconductor">Semiconductor Processing Equipment</option>
+              <option value="defense">Autonomous Defense Equipment</option>
+              <option value="energy">Energy (Oil, Gas, Solar)</option>
+              <option value="battery">Battery Technology</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form__group">
+            <label class="form__label" for="description">Describe Your Application</label>
+            <textarea class="form__textarea" id="description" name="description" placeholder="Tell us about the sealing challenge, including operating environment, media, temperature, pressure, or any specific requirements." required aria-required="true" minlength="10" maxlength="2000"></textarea>
+          </div>
+          <div class="form__group">
+            <label class="form__label" for="attachment">Upload a File <span style="font-weight:400; color: var(--text-muted);">(optional - drawings, specs, photos)</span></label>
+            <input class="form__input form__file" type="file" id="attachment" name="attachment" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.step,.stp,.dxf,.dwg">
+          </div>
+          <button type="submit" class="btn btn--primary">Submit Contact Form</button>
+          <p class="form__privacy-note">Your information is submitted securely and will only be used to respond to your inquiry.</p>
+        </form>
+
+        <div class="scheduler-callout">
+          <div class="scheduler-callout__icon">📅</div>
+          <div class="scheduler-callout__text">
+            <p class="scheduler-callout__heading">Prefer to book a meeting directly?</p>
+            <p class="scheduler-callout__sub">Skip the form and pick a time that works for you.</p>
+          </div>
+          <a href="#calendly-placeholder" class="btn btn--outline" target="_blank" rel="noopener noreferrer">Book a Meeting</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section contact-section">
+      <div class="section__inner">
+        <span class="section__label">Contact</span>
+        <h2 class="section__title">Talk to our team directly</h2>
+        <div class="contact-info">
+          <div class="contact-info__item">
+            <h3>Stu Krupoff</h3>
+            <p><a href="mailto:stu@placeholder.com" class="email-link"><span class="email" aria-label="stu at placeholder dot com">moc.redlohecalp@uts</span></a></p>
+            <p>(949) 337-9563</p>
+          </div>
+          <div class="contact-info__item">
+            <h3>Mike Krupoff</h3>
+            <p><a href="mailto:mike@placeholder.com" class="email-link"><span class="email" aria-label="mike at placeholder dot com">moc.redlohecalp@ekim</span></a></p>
+            <p>(510) 915-7119</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Who We Represent -->
+    <section class="section section--alt">
+      <div class="section__inner">
+        <span class="section__label">Who We Represent</span>
+        <div class="partner">
+          <div class="partner__logo"><img src="images/psi-logo.png" alt="PSI Performance Sealing Inc"></div>
+          <div class="partner__info">
+            <h3>Performance Sealing, Inc (PSI)</h3>
+            <p>PSI is an AS9100D-certified manufacturer of high-performance spring-energized polymer seals for critical applications. Using their proprietary Duron® materials and precision CNC machining, PSI delivers engineered sealing solutions for the most demanding environments in aerospace, medical, semiconductor, and energy industries.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    <div class="footer__inner">
+      <span class="footer__logo">STU KRUPOFF</span>
+      <ul class="footer__links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="products.html">Solutions</a></li>
+        <li><a href="industries.html">Industries</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <span class="footer__copy">&copy; 2026 Stu Krupoff. All rights reserved.</span>
+    </div>
+  </footer>
+  <script src="menu.js"></script>
+</body>
+</html>
